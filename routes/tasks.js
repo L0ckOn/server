@@ -4,49 +4,57 @@ const tasks = require('./data.json');
 const fs = require('fs');
 
 router.get('/filterBy=&order=desc&page=:page', (req, res) => {
-    const page = req.params
+    const page = req.params.page
     const startIndex = 5 * (page - 1);
-    res.send(tasks[startIndex, startIndex + 5])
+    res.send(tasks.posts.slice(startIndex, startIndex + 5))
+    // res.send(tasks.posts[])
+    // res.status(200);
+    // res.send('hello')
     
 });
 
 router.get('/filterBy=done&order=desc&page=:page', (req, res) => {
-    const posts = tasks.filter(task => task.done)
+    const posts = tasks.posts.filter(task => task.done)
     const page = req.params.page
     const startIndex = 5 * (page - 1);
-    res.send(posts[startIndex, startIndex + 5])
+    res.status(200);
+    res.send(posts.slice(startIndex, startIndex + 5))
     
 });
 
 router.get('/filterBy=undone&order=desc&page=:page', (req, res) => {
-    const posts = tasks.filter(task => !task.done)
+    const posts = tasks.posts.filter(task => !task.done)
     const page = req.params.page
     const startIndex = 5 * (page - 1);
-    res.send(posts[startIndex, startIndex + 5])
+    res.status(200);
+    res.send(posts.slice(startIndex, startIndex + 5))
     
 });
 
 router.get('/filterBy=&order=asc&page=:page', (req, res) => {
-    const posts = tasks.reverse()
+    const posts = tasks.posts.reverse()
     const page = req.url[req.url.length - 1];
     const startIndex = 5 * (page - 1);
-    res.send(posts[startIndex, startIndex + 5])
+    res.status(200);
+    res.send(posts.slice(startIndex, startIndex + 5))
     
 });
 
 router.get('/filterBy=done&order=asc&page=:page', (req, res) => {
-    const posts = tasks.reverse().filter(task => task.done);
+    const posts = tasks.posts.reverse().filter(task => task.done);
     const page = req.url[req.url.length - 1];
     const startIndex = 5 * (page - 1);
-    res.send(posts[startIndex, startIndex + 5])
+    res.status(200);
+    res.send(posts.slice(startIndex, startIndex + 5))
     
 });
 
 router.get('/filterBy=&order=asc&page=:page', (req, res) => {
-    const posts = tasks.reverse().filter(!task.done);
+    const posts = tasks.posts.reverse().filter(!task.done);
     const page = req.url[req.url.length - 1];
     const startIndex = 5 * (page - 1);
-    res.send(posts[startIndex, startIndex + 5])
+    res.status(200);
+    res.send(posts.slice(startIndex, startIndex + 5))
     
 });
 
@@ -57,7 +65,7 @@ router.post('/', (req, res) => {
 router
     .route('/:uuid')
     .get((req, res) => {
-        res.send(`${tasks.find((task => 
+        res.send(`${tasks.posts.find((task => 
             task["uuid"] === +req.params.uuid))}`);
         
     })
