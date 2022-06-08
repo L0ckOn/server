@@ -11,8 +11,11 @@ app.use(
     })
 )
 
+app.use(express.json());
+
 app.get('/', (req, res) => {
     console.log(1)
+    res.send('hello')
 });
 
 app.listen(PORT, () => {
