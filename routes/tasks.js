@@ -5,15 +5,16 @@ const fs = require('fs');
 
 router.get('/filterBy=&order=desc&page=:page', (req, res) => {
     if (!req.params.page) {
-        res.send(400).send('bad request: page not provided')
+        res.status(400).send('bad request: page not provided')
     }
-    const posts = tasks.posts.length > 1 && (tasks.posts[0].createdAt > tasks.posts[1].createdAt) ?
-        tasks.posts :
-        tasks.posts.reverse()
+    const posts = tasks.posts
+    if (posts[0].createdAt < posts[1].createdAt) {
+        posts.reverse();
+    }
     const page = req.params.page
     const startIndex = 5 * (page - 1);
     res.send({
-        count: tasks.count,
+        count: tasks.posts.length,
         tasks: posts.slice(startIndex, startIndex + 5)})
     res.status(200);
     
@@ -23,15 +24,16 @@ router.get('/filterBy=done&order=desc&page=:page', (req, res) => {
     if (!req.params.page) {
         res.send(400).send('bad request: page not provided')
     }
-    const posts = tasks.posts.length > 1 && (req.url.includes('desc')) ?
-        tasks.posts :
-        tasks.posts.reverse();
+    const posts = tasks.posts
+    if (posts[0].createdAt > posts[1].createdAt) {
+        posts.reverse();
+    }
     posts.filter(task => task.done);
     const page = req.params.page
     const startIndex = 5 * (page - 1);
     res.status(200);
     res.send({
-        count: tasks.count,
+        count: tasks.posts.length,
         tasks: posts.slice(startIndex, startIndex + 5)})
     
 });
@@ -40,15 +42,16 @@ router.get('/filterBy=undone&order=desc&page=:page', (req, res) => {
     if (!req.params.page) {
         res.send(400).send('bad request: page not provided')
     }
-    const posts = tasks.posts.length > 1 && (req.url.includes('desc')) ?
-        tasks.posts :
-        tasks.posts.reverse();
+    const posts = tasks.posts
+    if (posts[0].createdAt > posts[1].createdAt) {
+        posts.reverse();
+    }
     posts.filter(task => !task.done);
     const page = req.params.page
     const startIndex = 5 * (page - 1);
     res.status(200);
     res.send({
-        count: tasks.count,
+        count: tasks.posts.length,
         tasks: posts.slice(startIndex, startIndex + 5)})
     
 });
@@ -57,14 +60,16 @@ router.get('/filterBy=&order=asc&page=:page', (req, res) => {
     if (!req.params.page) {
         res.send(400).send('bad request: page not provided')
     }
-    const posts = tasks.posts.length > 1 && (req.url.includes('desc')) ?
-        tasks.posts :
-        tasks.posts.reverse();
+
+    const posts = tasks.posts;
+    if (posts[0].createdAt > posts[1].createdAt) {
+        posts.reverse();
+    }
     const page = req.params.page;
     const startIndex = 5 * (page - 1);
     res.status(200);
     res.send({
-        count: tasks.count,
+        count: tasks.posts.length,
         tasks: posts.slice(startIndex, startIndex + 5)})
     
 });
@@ -73,15 +78,16 @@ router.get('/filterBy=done&order=asc&page=:page', (req, res) => {
     if (!req.params.page) {
         res.send(400).send('bad request: page not provided')
     }
-    const posts = tasks.posts.length > 1 && (req.url.includes('asc')) ?
-        tasks.posts :
-        tasks.posts.reverse();
+    const posts = tasks.posts
+    if (posts[0].createdAt > posts[1].createdAt) {
+        posts.reverse();
+    }
     posts.filter(task => task.done);
     const page = req.params.page;
     const startIndex = 5 * (page - 1);
     res.status(200);
     res.send({
-        count: tasks.count,
+        count: tasks.posts.length,
         tasks: posts.slice(startIndex, startIndex + 5)})
     
 });
@@ -90,15 +96,16 @@ router.get('/filterBy=undone&order=asc&page=:page', (req, res) => {
     if (!req.params.page) {
         res.send(400).send('bad request: page not provided')
     }
-    const posts = tasks.posts.length > 1 && (req.url.includes('asc')) ?
-        tasks.posts :
-        tasks.posts.reverse();
+    const posts = tasks.posts
+    if (posts[0].createdAt > posts[1].createdAt) {
+        posts.reverse();
+    }
     posts.filter(task => task.done);
     const page = req.params.page;
     const startIndex = 5 * (page - 1);
     res.status(200);
     res.send({
-        count: tasks.count,
+        count: tasks.posts.length,
         tasks: posts.slice(startIndex, startIndex + 5)})
     
 });
@@ -111,7 +118,7 @@ router.post('/post/', (req, res) => {
     try {
         tasks.posts.push(req.body)
         const newTasks = JSON.stringify({
-            "count": tasks.count + 1,
+            "count": tasks.posts.length,
             "posts": tasks.posts
         }, null, 2)
         fs.writeFileSync('./routes/data.json', newTasks, (err) => {
