@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const tasks = require('./data.json');
+const tasks = require('../data.json');
 const fs = require('fs');
+const { json } = require('express');
 
 router.get('/filterBy=&order=desc&page=:page', (req, res) => {
     if (!req.params.page) {
@@ -121,7 +122,7 @@ router.post('/post/', (req, res) => {
             "count": tasks.posts.length,
             "posts": tasks.posts
         }, null, 2)
-        fs.writeFileSync('./routes/data.json', newTasks, (err) => {
+        fs.writeFileSync('./data.json', newTasks, (err) => {
             if (err) {
                 console.log(err);
             }
@@ -133,12 +134,36 @@ router.post('/post/', (req, res) => {
     }
 })
 
-router.delete('delete/:uuid', (req, res) => {
-    const newTasks = tasks.posts.filter(task => task.uuid !== req.params.uuid);
-    fs.writeFileSync('./routes/data.json', newTasks, (err) => {
+router.delete('/:uuid', (req, res) => {
+    if (!req.params.uuid) {
+        res.status(404).send('bad request: id of the task not provided')
+    }
+    try {
+        const posts = tasks.posts.filter(task => task.uuid !== req.params.uuid);
+        const newData = JSON.stringify({
+            count: posts.length,
+            posts: posts
+        })
+        fs.writeFileSync('./data.json', newData, (err => {
+            if (err) {
+                console.log(err);
+            }
+        }))
+        res.status(200).send('task deleted')
+    } catch (err) {
         console.log(err)
-    })
-    res.status(200).send('task deleted')
+    }
+})
+
+router.patch('/:uuid', (req, res) => {
+    if (!req.params.uuid) {
+        res.status(404).send('bad request: id of the task not provided');
+    }
+    try {
+        console.log(req.body);
+    } catch (err) {
+        console.log(err);
+    }
 })
 
 // router
