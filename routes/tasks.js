@@ -159,7 +159,19 @@ router.patch('/:uuid', (req, res) => {
         res.status(404).send('bad request: id of the task not provided');
     }
     try {
-        console.log(1)
+        const tasks = JSON.parse(fs.readFileSync('./data.json', err => console.log(err)));
+        const updatedTask = tasks.posts.find(task => task.uuid === +req.params.uuid)
+        if (req.body.done !== undefined) {
+            updatedTask.done = req.body.done;
+        } else if (req.body.name !== undefined) {
+            updatedTask.name = req.body.name;
+        }
+        // const updatedTasks = tasks.posts.filter(task => task.uuid === +req.params.uuid)
+        // updatedTasks.push(updatedTask)
+        fs.writeFileSync('./data.json', JSON.stringify({
+            count: tasks.posts.length,
+            posts: tasks.posts
+        }, null, 2), err => console.log(err))
     } catch (err) {
         console.log(err);
     }
